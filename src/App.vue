@@ -35,7 +35,7 @@ import { SupabaseAuthClient } from '@supabase/supabase-js/dist/module/lib/Supaba
 
       <input type="file" id="file" name="file" placeholder="my file" accept="image/png, image/jpeg"><br>
       <!--<img id="illustration" src="./assets/null.png" alt="poem illustration" width="75" height="75"/><br>-->
-      <input type="checkbox" v-model="hidden" value="true" checkedo="checked" />
+      <input type="checkbox" v-model="hidden" value="true" checked="checked" />
       <label>Hidden poem</label>
       <br><button v-on:click="createPoem()">Add the poem</button>
       <button v-on:click="fetchPoems()">List of poems</button><br>
