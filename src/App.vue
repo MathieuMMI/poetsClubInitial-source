@@ -37,6 +37,8 @@ import { SupabaseAuthClient } from '@supabase/supabase-js/dist/module/lib/Supaba
       <!--<img id="illustration" src="./assets/null.png" alt="poem illustration" width="75" height="75"/><br>-->
       <input type="checkbox" v-model="hidden" value="true" checked="checked" />
       <label>Hidden poem</label>
+      <input type="text" v-model="lang" />
+      <label>Langue</label>
       <br><button v-on:click="createPoem()">Add the poem</button>
       <button v-on:click="fetchPoems()">List of poems</button><br>
       <label for="poemtitle" id="poemtitle" style="color: teal;font-weight: 500;"> ... </label>
@@ -44,7 +46,8 @@ import { SupabaseAuthClient } from '@supabase/supabase-js/dist/module/lib/Supaba
         style="background-color:gray;" /><br>
       <textarea id="poemcontent" readonly rows="10" cols="50"> ... </textarea> <br>
       <button v-on:click="nextPoem()">Next poem</button><br>
-
+      <input v-model="text" type="text" />
+      <button v-on:click="filterPoems(text)">Filter poem</button><br>
     </div>
 
   </header>
@@ -128,7 +131,7 @@ export default {
         const { data, error } = await supabase
           .from('poems')
           .insert([
-            { hidden: this.hidden, email: this.email, title: this.title, content: this.content, illustrationurl: res }])
+            { hidden: this.hidden, email: this.email, title: this.title, content: this.content, illustrationurl: res, lang: this.lang }])
         if (error) throw (error)
       } catch (error) { alert(error.error_description || error.meassage) }
     },
@@ -164,7 +167,28 @@ export default {
         document.getElementById('poemcontent').value = poemsList[currentpoem].content
         document.getElementById('poemillustration').src = poemsList[currentpoem].illustrationurl
       }
-    }
+    },
+    async filterPoems() {
+      //mange supabase access exceptions
+      try {
+        //select all accessible poems (owned poems or public ones) 
+        const { data, error } = await supabase
+          .from('poems')
+          .select()
+          .like("title","%"+this.text+"%")
+        poemsList = data
+        if (error) throw error;
+        //display the first accessible poem if there is at least one poem
+        if (data.length > 0) {
+          document.getElementById('poemtitle').innerHTML = data[0].title + "    "
+          document.getElementById('poemcontent').value = data[0].content
+          document.getElementById('poemillustration').src = data[0].illustrationurl
+        }
+        //store the indexof the currently displayed poem
+      } catch (error) {
+        alert(error.error_description || error.message);
+      }
+    },
   }
 }
 </script>
